@@ -9,8 +9,11 @@ import SwiftUI
 
 struct ExpenseItem: Identifiable, Codable {
     var id = UUID()
+    
     let name: String
+    
     let type: String
+    
     let amount: Double
 }
 
@@ -40,34 +43,52 @@ struct ContentView: View {
     @StateObject var expenses = Expenses()
     @State private var showingAddExpense = false
     
-    
     var body: some View {
         NavigationView {
             List {
-                ForEach(expenses.items) {item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.type)
+                Section("Business Expenses"){
+                    ForEach(expenses.items) {item in
+                        if item.type == "Business" {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(item.name)
+                                        .font(.headline)
+                                    Text(item.type)
+                                    
+
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(self.expenseStyles(forAmount: Int(item.amount)))
+                                }
+                            }
                         }
                         
-                        Spacer()
-                        Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                            .foregroundColor(self.expenseStyles(forAmount: Int(item.amount)))
+                    }.onDelete(perform: removeItems)
+                }
+                Section("Personal Expenses") {
+                    ForEach(expenses.items) {item in
+                        if item.type == "Personal" {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(item.name)
+                                        .font(.headline)
+                                    Text(item.type)
+                                    
+
+                                    Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                        .foregroundColor(self.expenseStyles(forAmount: Int(item.amount)))
+                                }
+                            }
+                        }
+                        
                     }
-                }.onDelete(perform: removeItems)
+                    .onDelete(perform: removeItems)
+                }
             } .toolbar {
-                Button {
-                    showingAddExpense = true
-                } label: {
+                NavigationLink(destination: AddView(expenses: Expenses())) {
                     Image(systemName: "plus")
                 }
             }
             .navigationTitle("iExpense")
-        }
-        .sheet(isPresented: $showingAddExpense) {
-            AddView(expenses: expenses)
         }
     }
     func removeItems(at offsets: IndexSet) {
@@ -78,7 +99,7 @@ struct ContentView: View {
         case Int.min..<11:
             return .green
         case 11..<100:
-            return .yellow
+            return .green
         default:
             return .red
         }
