@@ -9,11 +9,8 @@ import SwiftUI
 
 struct ExpenseItem: Identifiable, Codable {
     var id = UUID()
-    
     let name: String
-    
     let type: String
-    
     let amount: Double
 }
 
@@ -84,12 +81,20 @@ struct ContentView: View {
                     .onDelete(perform: removeItems)
                 }
             } .toolbar {
+//                Button {
+//                    showingAddExpense = true
+//                } label: {
+//                    Image(systemName: "plus")
+//                }
                 NavigationLink(destination: AddView(expenses: Expenses())) {
                     Image(systemName: "plus")
                 }
             }
             .navigationTitle("iExpense")
         }
+//        .sheet(isPresented: $showingAddExpense) {
+//            AddView(expenses: expenses)
+//        }
     }
     func removeItems(at offsets: IndexSet) {
         expenses.items.remove(atOffsets: offsets)
@@ -99,7 +104,7 @@ struct ContentView: View {
         case Int.min..<11:
             return .green
         case 11..<100:
-            return .green
+            return .yellow
         default:
             return .red
         }
